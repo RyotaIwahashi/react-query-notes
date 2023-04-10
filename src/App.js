@@ -1,3 +1,16 @@
+// このアプリケーションでnotes backendからデータを取得するには、
+// js-application 側のフロントエンドを一回起動して、ログイン処理して
+// localStorage に ユーザ情報や token を保持しておく必要がある。
+import axios from 'axios'
+
+const baseUrl = '/api/notes'
+
+const getAll = async () => {
+  const response = await axios.get(baseUrl)
+  return response.data
+}
+getAll() // これでbackendにリクエストは飛んでることを確認できた。
+
 const App = () => {
   const addNote = async (event) => {
     event.preventDefault()
