@@ -1,11 +1,10 @@
 // このアプリケーションでnotes backendでデータを作成する際には、
 // js-application 側のフロントエンドを一回起動して、ログイン処理して
 // localStorage にユーザ情報や token を保持しておく必要がある。
-import axios from 'axios'
-import { useQuery } from 'react-query'
 import { useState, useEffect } from 'react'
+import { useQuery } from 'react-query'
 
-const baseUrl = '/api/notes'
+import { getNotes } from './request'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -37,10 +36,7 @@ const App = () => {
   // 指定した一意のキーは、アプリケーション全体でクエリを再取得、キャッシュ、および共有するために内部的に使用される。
   // 返されるクエリ結果には、テンプレート化やその他のデータの使用に必要なクエリに関するすべての情報が含まれている。
   // https://tanstack.com/query/latest/docs/react/guides/queries
-  const result = useQuery(
-    'notes',
-    () => axios.get(baseUrl).then(res => res.data)
-  )
+  const result = useQuery('notes', getNotes)
 
   // クエリのstatusが変更されたら再レンダリングしてくれるっぽい。
   // つまり、useState や store を使って再レンダリングするようにしなくても、
