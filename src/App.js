@@ -2,13 +2,17 @@
 // js-application 側のフロントエンドを一回起動して、ログイン処理して
 // localStorage にユーザ情報や token を保持しておく必要がある。
 import { useState, useEffect } from 'react'
-import { useQuery } from 'react-query'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 
-import { getNotes } from './request'
+import { getNotes, createNote, setToken, updateNote } from './request'
 
 const App = () => {
+
+  // useQueryClient を useState の後に定義すると warning が出る
+  // https://react.dev/warnings/invalid-hook-call-warning#breaking-rules-of-hooks
+  const queryClient = new useQueryClient()
+
   const [user, setUser] = useState(null)
-  // const [token, setToken] = useState('')
 
   useEffect(() => {
     // アクセスの度にlocalStorageからログイン情報を読み込む
@@ -16,19 +20,35 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-      // setToken(user.token)
+      setToken(user.token)
     }
   }, [])
+
+  // ミューテーションは通常、データの作成/更新/削除、またはサーバーの副作用の実行に使用される
+  // https://tanstack.com/query/latest/docs/react/guides/mutations
+  const newNoteMutation = useMutation(createNote, {
+    onSuccess: () => {
+      // React Query が管理するキー notes が無効であることを通知する
+      // React Query はキー notes を使用してクエリを自動的に更新して、再レンダリングする
+      queryClient.invalidateQueries('notes')
+    }
+  })
+
+  const updateNoteMutation = useMutation(updateNote, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('notes')
+    }
+  })
 
   const addNote = async (event) => {
     event.preventDefault()
     const content = event.target.note.value
     event.target.note.value = ''
-    console.log(content)
+    newNoteMutation.mutate({ content, important: true })
   }
 
   const toggleImportance = (note) => {
-    console.log('toggle importance of', note.id)
+    updateNoteMutation.mutate({ ...note, important: !note.important })
   }
 
   // クエリは、一意のキーに結び付けられたデータの非同期ソースに対する宣言的な依存関係。
