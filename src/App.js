@@ -16,6 +16,7 @@ const App = () => {
 
   useEffect(() => {
     // アクセスの度にlocalStorageからログイン情報を読み込む
+    // データはオリジン毎に保存される。オリジンとは、プロトコル、ドメイン、ポート番号の事。
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
@@ -27,10 +28,16 @@ const App = () => {
   // ミューテーションは通常、データの作成/更新/削除、またはサーバーの副作用の実行に使用される
   // https://tanstack.com/query/latest/docs/react/guides/mutations
   const newNoteMutation = useMutation(createNote, {
-    onSuccess: () => {
+    // onSuccess: () => {
       // React Query が管理するキー notes が無効であることを通知する
       // React Query はキー notes を使用してクエリを自動的に更新して、再レンダリングする
-      queryClient.invalidateQueries('notes')
+      // queryClient.invalidateQueries('notes')
+    // }
+    onSuccess: (newNote) => {
+      // ↑の方法だと毎回GETリクエストを送るのでサーバに負担がかかる場合がある。
+      // 直接クエリ内で管理されている notes を更新しても良い。reducer の state を更新するイメージ。
+      const notes = queryClient.getQueryData('notes')
+      queryClient.setQueryData('notes', notes.concat(newNote))
     }
   })
 
@@ -56,7 +63,7 @@ const App = () => {
   // 指定した一意のキーは、アプリケーション全体でクエリを再取得、キャッシュ、および共有するために内部的に使用される。
   // 返されるクエリ結果には、テンプレート化やその他のデータの使用に必要なクエリに関するすべての情報が含まれている。
   // https://tanstack.com/query/latest/docs/react/guides/queries
-  const result = useQuery('notes', getNotes)
+  const result = useQuery('notes', getNotes) // reducer の notes とそれに紐づく status っていうstateがあるイメージ？
 
   // クエリのstatusが変更されたら再レンダリングしてくれるっぽい。
   // つまり、useState や store を使って再レンダリングするようにしなくても、

@@ -19,7 +19,7 @@ export const createNote = newNote => {
     }
   }
   
-  return axios.post(baseUrl, newNote, config).then(res => res.data)
+  return axios.post(baseUrl, newNote, config).then(res => res.data) // res.data は onSuccessなどで取得できるパラメータ
 }
 
 export const updateNote = updatedNote =>
