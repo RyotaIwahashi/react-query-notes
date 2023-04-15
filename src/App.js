@@ -63,7 +63,9 @@ const App = () => {
   // 指定した一意のキーは、アプリケーション全体でクエリを再取得、キャッシュ、および共有するために内部的に使用される。
   // 返されるクエリ結果には、テンプレート化やその他のデータの使用に必要なクエリに関するすべての情報が含まれている。
   // https://tanstack.com/query/latest/docs/react/guides/queries
-  const result = useQuery('notes', getNotes) // reducer の notes とそれに紐づく status っていうstateがあるイメージ？
+  const result = useQuery('notes', getNotes, {
+    refetchOnWindowFocus: false // デフォルトでは、アプリのフォーカスが変更されたときにfetchする機能があるので off にする。
+  }) // reducer の notes とそれに紐づく status っていうstateがあるイメージ？
 
   // クエリのstatusが変更されたら再レンダリングしてくれるっぽい。
   // つまり、useState や store を使って再レンダリングするようにしなくても、
