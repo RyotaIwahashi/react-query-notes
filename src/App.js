@@ -3,6 +3,8 @@
 // 一方、react query を使用する場合、Redux は、サーバと同期しないデータの保存に使用できる。
 // ほとんどのアプリケーションは、サーバから提供されたデータを一時的に保存する方法だけでなく、
 // フロントエンドの残りの状態 (フォームや通知の状態など) を処理するための何らかのソリューションも必要とする。
+// ちなみに、redux は、react Hooks(useReducer + ReactContextAPI)でも代用できるし、Recoil という新しいライブラリも出ている。
+// どの状態管理ソリューションを選択するか: https://fullstackopen.com/en/part6/react_query_use_reducer_and_the_context#which-state-management-solution-to-choose
 
 // このアプリケーションでnotes backendでデータを作成する際には、
 // js-application 側のフロントエンドを一回起動して、ログイン処理して
